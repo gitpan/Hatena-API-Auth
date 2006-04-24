@@ -1,7 +1,7 @@
 package Hatena::API::Auth;
 use strict;
 use warnings;
-our $VERSION = 0.01;
+our $VERSION = 0.02;
 
 use base qw (Class::Accessor::Fast Class::ErrorHandler);
 
@@ -70,10 +70,10 @@ sub login {
     my $auth = $self->_get_auth_as_json($cert)
         or return $self->error($self->errstr);
     my $json = $self->_parse_json($auth);
-    if ($json->{status}) {
-        return Hatena::API::Auth::User->new($json->{user});
-    } else {
+    if ($json->{has_error}) {
         return $self->error($json->{error}->{message});
+    } else {
+        return Hatena::API::Auth::User->new($json->{user});
     }
 }
 

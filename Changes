@@ -1,5 +1,9 @@
 Revision history for Hatena-API-Auth
 
+0.02    2006-04-24T17:52:02+09:00
+        Changed the name of the error flag from "status" to
+        "has_error"
+
 0.01    2006-04-24T17:01:52+09:00
         First version, released on an unsuspecting world.
 
