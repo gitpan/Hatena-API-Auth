@@ -1,7 +1,7 @@
 package Hatena::API::Auth;
 use strict;
 use warnings;
-our $VERSION = 0.02;
+our $VERSION = 0.03;
 
 use base qw (Class::Accessor::Fast Class::ErrorHandler);
 
@@ -24,9 +24,11 @@ __PACKAGE__->mk_accessors(qw(api_key secret));
 
 sub uri_to_login {
     my $self = shift;
+    my %parameters = ref $_[0] eq 'HASH' ? %{$_[0]} : @_;
     my $uri = URI->new('http://auth.hatena.ne.jp/auth');
     my $request = {
         api_key => $self->api_key,
+        %parameters,
     };
     $uri->query_form(
         %$request,
@@ -92,7 +94,7 @@ Hatena::API::Auth - Perl intaface to the Hatena Authentication API
 
 =head1 VERSION
 
-Version 0.01
+Version 0.03
 
 =head1 SYNOPSIS
 
@@ -127,13 +129,22 @@ Returns an instance of Hatena::API::Auth. It requires two parameters,
 "api_key" and "secret" which can be retrieved from the Web site of
 Hatena Authentication API (L<http://auth.hatena.ne.jp/>).
 
-=item uri_to_login()
+=item uri_to_login(%extra)
 
 Returns a URI object which is associated with the login url and
 required parameters. You can also use this method in your templates of
 L<Template> like this:
 
   <a href="[% api.uri_to_login %]">login</a>
+
+C<uri_to_login> takes extra URI parameters as arguments like this:
+
+  <a href="[% api.uri_to_login(foo => 'bar', bar => 'baz') %]">login</a>
+
+Then extracted URI will have extra URI parameters such as
+C<foo=bar&bar=baz>. Those parameters will be passed to the
+Authentication API. They will be returned to your application as query
+parameters of the callback URL.
 
 =item login($cert)
 

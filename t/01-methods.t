@@ -1,8 +1,9 @@
 #!perl -T
 use strict;
 use warnings;
-use Test::More tests => 9;
+use Test::More tests => 15;
 use Hatena::API::Auth;
+use URI::QueryParam;
 
 my $api = Hatena::API::Auth->new({
     api_key => 'test',
@@ -10,7 +11,13 @@ my $api = Hatena::API::Auth->new({
 });
 
 is '8d03c299aa049c9e47e4f99e03f2df53', $api->api_sig({ api_key => 'test' });
-is 'http://auth.hatena.ne.jp/auth?api_key=test&api_sig=8d03c299aa049c9e47e4f99e03f2df53', $api->uri_to_login;
+is 'auth.hatena.ne.jp', $api->uri_to_login->host;
+is '8d03c299aa049c9e47e4f99e03f2df53', $api->uri_to_login->query_param('api_sig');
+is '59d7fb76ceeacc8850ccd2428fd2b0f0', $api->uri_to_login(foo => 'bar')->query_param('api_sig');
+is 'bar', $api->uri_to_login(foo => 'bar')->query_param('foo');
+is 'c166e2ea4984224375a88e080cd7cce6', $api->uri_to_login(foo => 'bar', 'bar' => 'baz')->query_param('api_sig');
+is 'bar', $api->uri_to_login(foo => 'bar', 'bar' => 'baz')->query_param('foo');
+is 'baz', $api->uri_to_login(foo => 'bar', 'bar' => 'baz')->query_param('bar');
 
 ok not $api->login('invalidfrob');
 like $api->errstr, qr/Invalid API key/;
