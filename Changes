@@ -1,5 +1,9 @@
 Revision history for Hatena-API-Auth
 
+0.04    2006-05-04T10:14:44+09:00
+        Added ua() method for getting/settting a user-agent from a
+        foreign class.
+
 0.03    2006-05-02T15:16:11+09:00
         Now uri_to_login can take extra URI parameters as argument.
 

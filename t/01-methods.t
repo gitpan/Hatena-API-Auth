@@ -1,7 +1,7 @@
 #!perl -T
 use strict;
 use warnings;
-use Test::More tests => 15;
+use Test::More tests => 16;
 use Hatena::API::Auth;
 use URI::QueryParam;
 
@@ -18,6 +18,7 @@ is 'bar', $api->uri_to_login(foo => 'bar')->query_param('foo');
 is 'c166e2ea4984224375a88e080cd7cce6', $api->uri_to_login(foo => 'bar', 'bar' => 'baz')->query_param('api_sig');
 is 'bar', $api->uri_to_login(foo => 'bar', 'bar' => 'baz')->query_param('foo');
 is 'baz', $api->uri_to_login(foo => 'bar', 'bar' => 'baz')->query_param('bar');
+isa_ok $api->ua, 'LWP::UserAgent';
 
 ok not $api->login('invalidfrob');
 like $api->errstr, qr/Invalid API key/;

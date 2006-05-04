@@ -1,7 +1,7 @@
 package Hatena::API::Auth;
 use strict;
 use warnings;
-our $VERSION = 0.03;
+our $VERSION = 0.04;
 
 use base qw (Class::Accessor::Fast Class::ErrorHandler);
 
@@ -48,6 +48,18 @@ sub api_sig {
     return Digest::MD5::md5_hex($sig);
 }
 
+sub ua {
+    my $self = shift;
+    if (@_) {
+        $self->{_ua} = shift;
+    } else {
+        $self->{_ua} and return $self->{_ua};
+        $self->{_ua} = LWP::UserAgent->new;
+        $self->{_ua}->agent(join '/', __PACKAGE__, __PACKAGE__->VERSION);
+    }
+    $self->{_ua};
+}
+
 sub _get_auth_as_json {
     my $self = shift;
     my $cert = shift or croak "You must specify your cert as an argument.";
@@ -60,9 +72,7 @@ sub _get_auth_as_json {
         %$request,
         api_sig => $self->api_sig($request),
     );
-    my $ua = LWP::UserAgent->new;
-    $ua->agent(join '/', __PACKAGE__, __PACKAGE__->VERSION);
-    my $res = $ua->get($uri->as_string);
+    my $res = $self->ua->get($uri->as_string);
     $res->is_success ? $res->content : $self->error($res->status_line);
 }
 
@@ -94,7 +104,7 @@ Hatena::API::Auth - Perl intaface to the Hatena Authentication API
 
 =head1 VERSION
 
-Version 0.03
+Version 0.04
 
 =head1 SYNOPSIS
 
@@ -173,6 +183,10 @@ Returns a url of a thumbnail of user's profile image.
 =item api_sig($request)
 
 An internal method for generating signatures.
+
+=item ua
+
+Set/Get HTTP a user-agent for custormizing its behaviour.
 
 =back
 
